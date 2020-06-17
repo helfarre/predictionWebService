@@ -8,10 +8,18 @@ from flask_cors import CORS
 from json import JSONEncoder
 import json
 from flask import Response
+import logging
+
 # init app 
 app = Flask(__name__)
 cors = CORS(app, resources={"*": {"origins": "*"}})
 app.config['CORS_HEADERS'] = 'Content-Type'
+
+logger = logging.getLogger()
+formatter = logging.Formatter("%(asctime)s - %(name)s - %(levelname)s - "
+                      "%(name)s:%(lineno)d [-] %(funcName)s- %(message)s")
+logger.setLevel(logging.INFO)
+
 
 basedir = os.path.abspath(os.path.dirname(__file__))
 
@@ -37,7 +45,7 @@ def predictee(stock):
         model = load_model(stock+'.h5')
     else :
         evaluate_model(stock)
-        model = load_model(stock+'.h5')
+        model = load_model(stock+'.h5') 
     predictions = predict(stock,model).tolist()
     latestprice = float(getLatestPrice(stock))
     obj = PredictionResult()

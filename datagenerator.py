@@ -1,4 +1,4 @@
-import pandas_datareader as web
+import pandas_datareader.data as web
 import datetime
 import math
 import numpy as np
@@ -13,6 +13,6 @@ def getStockData(stockSymbol,startDate,EndDate,intervalmargin) :
     Close = (df.filter(['Close'])).values.tolist()
     High = (df.filter(['High'])).values.tolist()
     Low = (df.filter(['Low'])).values.tolist()
-    Open = (df.filter(['Open'])).values.tolist()
+    Open = (df.filter(['Open'])).values.tolist() 
     Time = (df.index).tolist()
     return jsonify({'Close' : Close, 'High' : High, 'Low' : Low ,'Open' : Open,'Date' : Time})

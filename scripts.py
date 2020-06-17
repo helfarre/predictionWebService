@@ -6,7 +6,7 @@
 
 import datetime
 import math
-import pandas_datareader as web
+import pandas_datareader.data as web
 import numpy as np
 import pandas as pd
 from sklearn.preprocessing import MinMaxScaler
@@ -14,7 +14,6 @@ import tensorflow as tf
 from tensorflow.keras.models import Sequential
 from tensorflow.keras.layers import Dense, LSTM,Dropout
 from json import JSONEncoder
-
 
 def evaluate_model(stockSymbol):
     x = datetime.datetime.now()
@@ -31,7 +30,7 @@ def evaluate_model(stockSymbol):
 #     plt.show()
     data = df.filter(['Close'])
     dataset = data.values
-    print(dataset)
+    # print(dataset)
     training_data_len= math.ceil(len(dataset) * 0.9)
     train_data_unscaled = dataset[0:training_data_len, :]
 #     train_data_unscaled
@@ -59,9 +58,7 @@ def evaluate_model(stockSymbol):
     model.add(LSTM(100,activation='relu',return_sequences=False))
     #Notre modele retourne à la fin les 5 valeurs des 4 futures journées
     model.add(Dense(5))
-
     model.compile(optimizer='adam', loss='mean_squared_error',metrics=['accuracy'])
-
 #     model.summary()
     history = model.fit(x_train,y_train,batch_size=8,epochs=2,validation_split=0.1)
 #     plt.figure(figsize=(16,8))
@@ -85,15 +82,20 @@ def predict(StockName, model):
     date3day =y.strftime("%Y")+'-'+y.strftime("%m")+'-'+y.strftime("%d")
     df= web.DataReader(StockName, data_source='yahoo', start=date3day, end=datetoday)
     data = df.filter(['Close'])
-    data  =data[-30:]
     # print(data)
     predict_data_input= Scaler.fit_transform(data)
 #     predict_data_input= np.array(predict_data_input)
     x_test= np .reshape(predict_data_input,(predict_data_input.shape[1],predict_data_input.shape[0],1))
-    predictions = model.predict(x_test)
+    predictions = np.empty([len(x_test), 5], dtype=np.float32)
+    BATCH_INDICES = np.arange(start=0, stop=len(x_test), step=8)  # row indices of batches
+    BATCH_INDICES = np.append(BATCH_INDICES, len(x_test))  # add final batch_end row
+    for index in np.arange(len(BATCH_INDICES) - 1):
+        batch_start = BATCH_INDICES[index]  # first row of the batch
+        batch_end = BATCH_INDICES[index + 1]  # last row of the batch
+        predictions[batch_start:batch_end] = model.predict_on_batch(x_test[batch_start:batch_end])
     #Inversion de normalisation ( Revenir aux valeurs originale)
     predictions = Scaler.inverse_transform(predictions)
-    # print(predictions)
+    # print(predictions) 
     return np.asarray(predictions[0])
 
 def getLatestPrice(StockName):
@@ -106,6 +108,7 @@ def getLatestPrice(StockName):
     data = df.filter(['Close'])
     data =np.asarray(data)
     C = data.item(data.size-1)
+    tf.keras.backend.clear_session()
     return C
     # return predictions
     
