@@ -82,10 +82,11 @@ def predict(StockName, model):
     date3day =y.strftime("%Y")+'-'+y.strftime("%m")+'-'+y.strftime("%d")
     df= web.DataReader(StockName, data_source='yahoo', start=date3day, end=datetoday)
     data = df.filter(['Close'])
+    data= data.tail(30)
     # print(data)
     predict_data_input= Scaler.fit_transform(data)
 #     predict_data_input= np.array(predict_data_input)
-    x_test= np .reshape(predict_data_input,(predict_data_input.shape[1],predict_data_input.shape[0],1))
+    x_test= np.reshape(predict_data_input,(predict_data_input.shape[1],predict_data_input.shape[0],1))
     predictions = np.empty([len(x_test), 5], dtype=np.float32)
     BATCH_INDICES = np.arange(start=0, stop=len(x_test), step=8)  # row indices of batches
     BATCH_INDICES = np.append(BATCH_INDICES, len(x_test))  # add final batch_end row
