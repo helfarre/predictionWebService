@@ -52,15 +52,14 @@ def evaluate_model(stockSymbol):
 
     #Construction du modele
     model = Sequential()
-    model.add(LSTM(100,activation='relu',return_sequences=True,input_shape=(x_train.shape[1],1)))
-    #Dropout est utilisé pour eliminer le OVERFITTING
-    model.add(Dropout(0.2))
-    model.add(LSTM(100,activation='relu',return_sequences=False))
-    #Notre modele retourne à la fin les 5 valeurs des 4 futures journées
+    model.add(LSTM(90,activation='relu',return_sequences=True,input_shape=(x_train.shape[1],1)))
+    model.add(LSTM(45,activation='relu',return_sequences=False))
+
+#Notre modele retourne à la fin les 5 valeurs des 5 futures journées
     model.add(Dense(5))
     model.compile(optimizer='adam', loss='mean_squared_error',metrics=['accuracy'])
 #     model.summary()
-    history = model.fit(x_train,y_train,batch_size=8,epochs=2,validation_split=0.1)
+    history = model.fit(x_train,y_train,batch_size=50,epochs=110,validation_split=0.1)
 #     plt.figure(figsize=(16,8))
 #     plt.plot(history.history['loss'])
 #     plt.plot(history.history['val_loss'])
