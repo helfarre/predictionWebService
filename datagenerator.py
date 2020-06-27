@@ -9,7 +9,8 @@ def getStockData(stockSymbol,startDate,EndDate,intervalmargin) :
     datetoday =x.strftime("%Y")+'-'+x.strftime("%m")+'-'+x.strftime("%d")
     y=datetime.fromtimestamp(int(startDate))
     date5yearsago =y.strftime("%Y")+'-'+y.strftime("%m")+'-'+y.strftime("%d")
-    if intervalmargin != "d" :
+    if intervalmargin == 'd' :
+        print("hello")
         df= web.DataReader(stockSymbol, data_source='yahoo', start=date5yearsago, end=datetoday)
     else :
         df= web.get_data_yahoo(stockSymbol,interval=intervalmargin, start=date5yearsago, end=datetoday)
