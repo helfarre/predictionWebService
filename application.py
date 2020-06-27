@@ -14,7 +14,6 @@ import logging
 app = Flask(__name__)
 cors = CORS(app, resources={"*": {"origins": "*"}})
 app.config['CORS_HEADERS'] = 'Content-Type'
-
 logger = logging.getLogger()
 formatter = logging.Formatter("%(asctime)s - %(name)s - %(levelname)s - "
                       "%(name)s:%(lineno)d [-] %(funcName)s- %(message)s")
